@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/examPage.css">
+    <title>Exam Page</title>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Navbar</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Link</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Dropdown
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="#">Action</a>
+                        <a class="dropdown-item" href="#">Another action</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#">Something else here</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link disabled" href="#">Disabled</a>
+                </li>
+            </ul>
+            <form class="form-inline my-2 my-lg-0">
+                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            </form>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-9 leftDiv" style="background-color: yellow;">
+                <div class="testDiv">
+                    <div class="questionDiv"></div>
+                    <div class="optionDiv"></div>
+                </div>
+                <div class="btnDiv">
+                    <button id="resetbtn" onclick="resetAnswer()">Reset</button>
+                    <button id="savebtn" onclick="saveAnswer()">Save</button>
+                    <button id="review">Mark for review</button>
+                </div>
+            </div>
+            <div class="col-3 rightDiv" style="background-color: red;">
+                <div class="imgDiv">img</div>
+                <div class="navigationBtns">
+
+                </div>
+                <div class="submitTestDiv">
+                    <button id="submitbtn" onclick="submitTest()">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+
+    <script type='text/javascript'>
+
+        init(); // sets test data in local storage
+        function init() {
+            if (localStorage.getItem('init') == null) {
+
+                let testData = JSON.parse('<%-JSON.stringify(testData)%>');
+                localStorage.setItem('testData', JSON.stringify(testData));
+                let n = testData.length;
+                let response = [];
+                for(let i = 0 ; i<n ; ++i) response.push({id : i,value : "-1"});
+                localStorage.setItem('response', JSON.stringify(response));
+                localStorage.setItem('init', JSON.stringify(true));
+                let time = JSON.parse(localStorage.getItem('time'));
+                let endTime = Date.parse(time.endDate + 'T' + time.endTime);
+                localStorage.setItem('endTime', JSON.parse(endTime));
+            }
+            generateNavBtns();
+            showQuestion();
+        }
+
+        function generateNavBtns() {
+
+            let testData = JSON.parse(localStorage.getItem("testData"));
+            let n = testData.length;
+            let div = document.querySelector('.navigationBtns')
+            for (let i = 0; i < n; ++i) {
+
+                let newbtn = document.createElement('button');
+                newbtn.classList.add("navbtn");
+                newbtn.setAttribute('id', i);
+                newbtn.setAttribute('onclick', 'toggleNavBtns()');
+
+                if (i == 0) {
+                    newbtn.classList.add("activeQuestion");
+                }
+                newbtn.innerText = i + 1;
+                div.appendChild(newbtn);
+            }
+        }
+
+        function removeOptions() {
+            return new Promise((res,rej)=>{
+
+                let optionDiv = document.querySelector('.optionDiv');
+                let options = optionDiv.childNodes;
+                for(let i = options.length-1 ; i >= 0 ; --i){
+                    optionDiv.removeChild(optionDiv.childNodes[i]);
+                }
+                res();   
+            })
+        }
+
+        function showQuestion() {
+
+            removeOptions().then(() => {
+                let activeQuestion = document.querySelector(".activeQuestion");
+                if (activeQuestion == null) return;
+                let idx = activeQuestion.id;
+
+                let testData = JSON.parse(localStorage.getItem("testData"));
+                let data = testData[idx];
+
+                let questionDiv = document.querySelector(".questionDiv");
+                let optionDiv = document.querySelector(".optionDiv");
+
+                questionDiv.innerHTML = '<p>'+data.question.value+'</p>';
+                let n = data.options.length;
+                for (let i = 0; i < n; ++i) {
+                    let option = document.createElement('div');
+                    option.classList.add("options");
+                    option.innerHTML = '<div onclick = "toggleOptions()" class="selectOption" id="O-' + data.options[i].id + '"></div><div class="optionValue">' + data.options[i].value + '</div>';
+                    optionDiv.appendChild(option);
+                }
+
+                let resp = JSON.parse(localStorage.getItem('response'));
+                if(resp[idx].value != '-1'){
+                    document.getElementById('O-'+resp[idx].value).classList.add('activeOption');
+                }
+
+            }).catch((err)=>{
+                console.log(err)
+            })
+        }
+
+        function toggleNavBtns() {
+            let navDiv = document.querySelectorAll(".navbtn")
+            let n = navDiv.length;
+
+            for (let i = 0; i < n; ++i) {
+                navDiv[i].onclick = function () {
+                    for (let j = 0; j < n; j++) {
+                        if (navDiv[j].classList.contains("activeQuestion")) {
+                            navDiv[j].classList.remove("activeQuestion");
+                        }
+                    }
+                    navDiv[i].classList.add("activeQuestion");
+                    showQuestion();
+                }
+            }
+        }
+
+        setInterval(() => {
+            checkTime();
+        }, 1000);
+    
+        function toggleOptions(){
+            let optionID = event.target.id;
+            let options = document.getElementsByClassName('selectOption');
+            let n = options.length;
+            for(let i = 0 ; i<n ; ++i){
+                if(options[i].classList.contains('activeOption')){
+                    options[i].classList.remove('activeOption');
+                }
+            }
+            document.getElementById(optionID).classList.add('activeOption')
+        }
+        
+        function saveAnswer() {
+
+            let activeOption = document.querySelector(".activeOption");
+            if(activeOption == null)return;
+            let answerID = activeOption.id;
+            let idx = answerID.slice(2);
+            let response = JSON.parse(localStorage.getItem('response'));
+            let id = document.querySelector('.activeQuestion').id;
+            let obj = {
+                id : id,
+                value : idx
+            };  
+
+            response[id] = obj;
+            localStorage.setItem('response' , JSON.stringify(response));
+            nextQuestion();
+        }
+
+        function nextQuestion(){
+            let n = JSON.parse(localStorage.getItem('testData')).length;
+            let ID = document.querySelector('.activeQuestion').id;
+            document.getElementById(ID).classList.remove('activeQuestion');
+           
+            let newID = ++ID;
+            if(newID == n) newID = 0;
+            document.getElementById(newID).classList.add('activeQuestion');
+            showQuestion();
+        }
+
+        function resetAnswer() {
+            let answer = document.querySelector(".activeOption");
+            if(answer == null ||  answer == undefined) return;
+            answer.classList.remove('activeOption');
+
+            let questionID = document.querySelector('.activeQuestion').id;
+            let resp = JSON.parse(localStorage.getItem('response'));
+         
+            resp[questionID].value = "-1";
+            localStorage.setItem('response', JSON.stringify(resp));
+        }
+
+        function checkTime() {
+            let d = new Date();
+            let currTime = Date.parse(d);
+            let endTime = localStorage.getItem('endTime');
+            if (endTime == null) return;
+            if (currTime >= endTime) {
+                autoSubmitTest();
+            }
+        }
+        function autoSubmitTest() {
+
+            let studentResponse = {
+                studentID: JSON.parse(localStorage.getItem('studentID')),
+                response: JSON.parse(localStorage.getItem('response'))
+            }
+            let classCode = JSON.parse('<%-JSON.stringify(classCode)%>');
+            let testName = JSON.parse(localStorage.getItem('testName'));
+
+            const url = '/saveResponse/' + classCode + '/' + testName;
+            const params = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(studentResponse)
+            }
+
+            fetch(url, params).then((resp) => {
+                localStorage.clear()
+                location.href = '/endPage'
+            }).catch((err) => {
+                console.log(err)
+            });
+        }
+
+        function submitTest() {
+            if (confirm('Do you want to submit your test?')) {
+                autoSubmitTest();
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>joiningPage</h1>
+    <form onsubmit="sendData(event)" id="joinForm">
+        
+    </form>
+
+<script type="text/javascript">
+   const formData = JSON.parse('<%-JSON.stringify(formData)%>');
+    createForm();
+    function createForm(){
+        let n = formData.length;
+        let form = document.getElementById('joinForm');
+        for(let i = 0 ; i<n ; ++i){
+            let newDiv = document.createElement('div');
+            newDiv.innerHTML = '<p>Enter '+formData[i]+' : </p><input type="text" name='+formData[i]+' class="inpEle">';
+            newDiv.classList.add('inputDiv');
+            form.appendChild(newDiv);
+        }
+        let submitbtn = document.createElement('button');
+        submitbtn.setAttribute('type','submit');
+        submitbtn.setAttribute('name','joinForm');
+        submitbtn.innerText = 'Submit'
+        form.appendChild(submitbtn);
+    }
+    
+    function sendData(e){
+        e.preventDefault();
+        let n = formData.length;
+        let responseObj = {};
+        for(let i = 0 ; i<n; ++i){
+            responseObj[formData[i]] = document.forms['joinForm'][formData[i]].value;
+        }
+        const classCode = JSON.parse('<%-JSON.stringify(classCode)%>');
+        const url = 'http://localhost:3000/registerStudent/'+classCode;   
+        const params = {
+            method : 'POST',
+            body : JSON.stringify(responseObj),
+            headers : {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json, text/plain, */*'
+            }
+        };
+        
+        fetch(url ,params).then(()=>{
+            console.log('success');
+            location.href = '/'
+        }).catch(()=>{
+            console.log('error');
+        })
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,18 @@
+.existingListItem{
+    display: block;
+}
+
+.inputListItem{
+    display: block;
+}
+
+.hiddenElement{
+    visibility: hidden;
+}
+
+.activeTest{
+    background-color: grey;
+}
+.activeStudent{
+    background-color:lightgreen;
+}

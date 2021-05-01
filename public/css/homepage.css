@@ -1,0 +1,16 @@
+body{
+  font-family: 'Karantina', cursive;
+  color: white;
+  font-family:'Times New Roman', Times, serif
+}
+
+
+.jumbotron{
+  background-color: #222831 !important;
+}
+  
+.part-2{
+  background-color: #393E46;
+  padding: 50px;
+}
+

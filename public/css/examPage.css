@@ -1,0 +1,22 @@
+.navbtn{
+    height:30px;
+    width:30px;
+}
+.selectOption{
+    height: 0.9rem;
+    width: 0.9rem;
+    background-color: white;
+    border-radius: 100%;
+}
+.activeQuestion{
+    background-color: green !important;
+}
+.activeOption{
+    background-color:blue !important;
+}
+.reviewQuestion{
+    background-color:orange !important;
+}
+.savedQuestion{
+    background-color : rgb(108, 228, 108) ;
+}
