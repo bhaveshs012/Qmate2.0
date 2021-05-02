@@ -70,6 +70,11 @@ app.get('/about', (req,res)=>{
     res.render('about')
 })
 
+app.get('/contact', (req,res)=>{
+    res.render('contact')
+})
+
+
 app.post("/teacher/signup", (req, res) => {
 
     if (req.body.password.length < 6) {
